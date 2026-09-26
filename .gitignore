@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.local
+dist/
+build/
+*.log
+coverage/
+.devdata/
+e2e/screenshots/
+playwright-report/
+test-results/
