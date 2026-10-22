@@ -30,7 +30,10 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowedMimes = ["image/vnd.dxf", "application/dxf", "application/x-dxf", "application/x-autocad"];
-        if (allowedMimes.includes(file.mimetype)) {
+        // Browsers often label .dxf as application/octet-stream (or nothing),
+        // so the extension is accepted too; the parser rejects non-DXF content.
+        const isDxfName = file.originalname?.toLowerCase().endsWith(".dxf");
+        if (allowedMimes.includes(file.mimetype) || isDxfName) {
             cb(null, true);
         } else {
             cb(new AppError("Invalid file type. Only DXF files are allowed.", 400, "INVALID_FILE_TYPE"), false);
