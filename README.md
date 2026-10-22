@@ -170,6 +170,20 @@ npm run dev
 
 Runs on `http://localhost:5173`.
 
+## Production Deployment
+
+Deploy the frontend, REST API, and WebSocket server as three separate services. The frontend must be rebuilt after changing either `VITE_*` variable because Vite embeds those values at build time.
+
+| Service | Host configuration | Required production configuration |
+|---|---|---|
+| Frontend | Vercel, root directory `frontend`, build command `npm run build`, output `dist` | `VITE_API_BASE=https://<api-host>` and `VITE_WS_BASE=wss://<ws-host>` |
+| REST API | Render Web Service | Build: `npm install --prefix backend/shared && npm install --prefix backend/express`; start: `npm --prefix backend/express start`; set `MONGO_URI`, `REDIS_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `NODE_ENV=production`, and `CLIENT_URL=https://<frontend-host>` |
+| WebSocket server | Render Web Service | Build: `npm install --prefix backend/shared && npm install --prefix backend/ws`; start: `npm --prefix backend/ws start`; set `REDIS_URL`, `JWT_SECRET` (the exact same value used by the API), and `NODE_ENV=production` |
+
+For Atlas, allow the Render outbound IP ranges before deploying the REST API. Use a managed Redis instance such as Upstash in production; a local Docker Redis container is only reachable from the computer running it. Do not run `npm run seed` against a production database because it deletes existing application data.
+
+On Render's free plan, the API and WebSocket services can sleep after inactivity. The first request or socket connection can take roughly a minute while the service starts; the frontend reconnects to the WebSocket service automatically.
+
 ## Running Tests
 
 ```powershell
