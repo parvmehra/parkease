@@ -8,7 +8,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     throw new Error("Missing required environment variable: JWT_SECRET");
 }
-const port = process.env.WS_PORT || 4445;
+// Render and similar hosts provide the listening port through PORT. Keep
+// WS_PORT as a local-development fallback for the existing Docker setup.
+const port = Number(process.env.PORT || process.env.WS_PORT || 4445);
 const wss = new WebSocketServer({ port });
 
 const userSockets = new Map();
